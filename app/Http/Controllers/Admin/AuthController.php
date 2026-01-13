@@ -83,7 +83,7 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('home')->with('success', 'Đăng ký thành công! Chào mừng bạn đến với Beauty Shop!');
+        return redirect()->route('home')->with('success', 'Đăng ký thành công! Chào mừng bạn đến với Fashion Shop!');
     }
 
     // Đăng xuất

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Đăng ký - Beauty Shop')
+@section('title', 'Đăng ký - Fashion Shop')
 
 @section('content')
 <div class="container py-5">
@@ -12,7 +12,7 @@
                         <h2 class="fw-bold text-primary">
                             <i class="fas fa-user-plus me-2"></i>Đăng ký tài khoản
                         </h2>
-                        <p class="text-muted">Tham gia Beauty Shop để nhận nhiều ưu đãi</p>
+                        <p class="text-muted">Tham gia Fashion Shop để nhận nhiều ưu đãi</p>
                     </div>
 
                     @if(session('success'))

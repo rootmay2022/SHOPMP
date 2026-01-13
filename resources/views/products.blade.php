@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Sản phẩm - Beauty Shop')
+@section('title', 'Sản phẩm - Fashion Shop')
 
 @section('content')
     <!-- Page Header -->
@@ -8,8 +8,9 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto text-center">
-                    <h1 class="fw-bold">Sản phẩm mỹ phẩm</h1>
-                    <p class="lead text-muted">Khám phá bộ sưu tập mỹ phẩm đa dạng, chất lượng cao</p>
+                    <h1 class="fw-bold">Sản phẩm thời trang
+                    </h1>
+                    <p class="lead text-muted">Khám phá bộ sưu tập thời trangđa dạng, chất lượng cao</p>
                 </div>
             </div>
         </div>
@@ -118,7 +119,8 @@
                         <div class="col-md-6 col-lg-4">
                             <div class="card product-card h-100">
                                 <div class="position-relative">
-                                    <img src="{{ $product->image }}" class="card-img-top product-image" alt="{{ $product->name }}">
+                                <img src="{{ asset($product->image) }}" class="card-img-top product-image" alt="{{ $product->name }}">
+
                                     @if($product->hasDiscount())
                                     <span class="position-absolute top-0 start-0 badge bg-danger m-2">Giảm {{ $product->getDiscountPercentage() }}%</span>
                                     @endif
@@ -126,6 +128,20 @@
                                         <button class="btn btn-sm btn-light rounded-circle">
                                             <i class="fas fa-heart"></i>
                                         </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ $product->name }}</h5>
+                                    <p class="card-text text-muted">{{ Str::limit($product->description, 100) }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="price">{{ $product->getFormattedPrice() }}</div>
+                                        <form action="{{ route('cart.add', $product->id) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-shopping-cart me-1"></i>Thêm
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                                 <div class="card-body d-flex flex-column">
@@ -145,9 +161,13 @@
                                     <div class="mt-auto">
                                         <div class="row g-2">
                                             <div class="col-8">
-                                                <button class="btn btn-primary w-100">
-                                                    <i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ
-                                                </button>
+                                                <form action="{{ route('cart.add', $product->id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <input type="hidden" name="quantity" value="1">
+                                                    <button type="submit" class="btn btn-primary w-100">
+                                                        <i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ
+                                                    </button>
+                                                </form>
                                             </div>
                                             <div class="col-4">
                                                 <a href="{{ route('products.show', $product->id) }}" class="btn btn-outline-secondary w-100">

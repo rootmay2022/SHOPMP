@@ -9,11 +9,11 @@ class Banner extends Model
 {
     use HasFactory;
 
-    protected $table = 'beauty_banners';
+    protected $table = 'banners';
 
     protected $fillable = [
         'title',
-        'description',
+        'description', 
         'image',
         'link',
         'sort_order',
@@ -27,6 +27,12 @@ class Banner extends Model
     // Scope để lấy banner active
     public function scopeActive($query)
     {
-        return $query->where('is_active', true)->orderBy('sort_order', 'asc');
+        return $query->where('is_active', true);
+    }
+
+    // Scope để lấy banner theo thứ tự
+    public function scopeOrdered($query)
+    {
+        return $query->orderBy('sort_order', 'asc');
     }
 }

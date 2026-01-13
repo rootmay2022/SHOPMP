@@ -74,4 +74,14 @@ class Product extends Model
     {
         return number_format($this->old_price) . 'đ';
     }
+
+    // Relationship to category by name column
+    public function category()
+    {
+        // Maps product's 'category' (name string) to categories.name
+        return $this->belongsTo(Category::class, 'category', 'name');
+    }
+
+    // Relationship to brand by name column
+   
 } 

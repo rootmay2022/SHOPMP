@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Shop;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
+use Illuminate\Support\Facades\Auth;
 
-class ProductController extends Controller
+class ProductController extends \App\Http\Controllers\Controller
 {
     public function index(Request $request)
     {
@@ -79,4 +80,48 @@ class ProductController extends Controller
 
         return view('product-detail', compact('product', 'relatedProducts'));
     }
-} 
+
+    public function addToCart(Request $request, $id)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1'
+        ]);
+
+        $product = Product::findOrFail($id);
+        
+        if (!$product->is_active) {
+            return back()->with('error', 'Sản phẩm này hiện không khả dụng');
+        }
+
+        $sessionId = session()->getId();
+        $userId = Auth::id();
+
+        // Kiểm tra sản phẩm đã có trong giỏ hàng chưa
+        $existingCart = \App\Models\Cart::where('product_id', $id)
+            ->where(function($query) use ($userId, $sessionId) {
+                if ($userId) {
+                    $query->where('user_id', $userId);
+                } else {
+                    $query->where('session_id', $sessionId);
+                }
+            })
+            ->first();
+
+        if ($existingCart) {
+            // Cập nhật số lượng
+            $existingCart->update([
+                'quantity' => $existingCart->quantity + $request->quantity
+            ]);
+        } else {
+            // Thêm mới vào giỏ hàng
+            \App\Models\Cart::create([
+                'user_id' => $userId,
+                'product_id' => $id,
+                'quantity' => $request->quantity,
+                'session_id' => $sessionId
+            ]);
+        }
+
+        return back()->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
+    }
+}

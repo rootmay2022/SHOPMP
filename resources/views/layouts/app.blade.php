@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Shop Mỹ Phẩm - Chất lượng cao, giá tốt')</title>
+    <title>@yield('title', 'Shop thời trang - Chất lượng cao, giá tốt')</title>
     
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -155,7 +155,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
         <div class="container">
             <a class="navbar-brand" href="{{ route('home') }}">
-                <i class="fas fa-spa me-2"></i>Beauty Shop
+                <i class="fas fa-spa me-2"></i>Fashion Shop
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -167,8 +167,17 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('home') }}">Trang chủ</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('products') }}">Sản phẩm</a>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Sản phẩm
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ route('products') }}">Tất cả sản phẩm</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            @foreach(\App\Models\Category::active()->get() as $category)
+                                <li><a class="dropdown-item" href="{{ route('products', ['category' => $category->name]) }}">{{ $category->name }}</a></li>
+                            @endforeach
+                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#about">Về chúng tôi</a>
@@ -182,7 +191,15 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('cart') }}">
                             <i class="fas fa-shopping-cart"></i>
-                            <span class="badge bg-danger ms-1">0</span>
+                            @php
+                                $cartCount = 0;
+                                if (session()->has('cart')) {
+                                    $cartCount = count(session('cart'));
+                                } elseif (auth()->check()) {
+                                    $cartCount = \App\Models\Cart::where('user_id', auth()->id())->sum('quantity');
+                                }
+                            @endphp
+                            <span class="badge bg-danger ms-1">{{ $cartCount }}</span>
                         </a>
                     </li>
                     @auth
@@ -191,8 +208,8 @@
                                 <i class="fas fa-user me-1"></i>{{ Auth::user()->name }}
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#profile"><i class="fas fa-user-circle me-2"></i>Hồ sơ</a></li>
-                                <li><a class="dropdown-item" href="#orders"><i class="fas fa-shopping-bag me-2"></i>Đơn hàng</a></li>
+                                <li><a class="dropdown-item" href="{{ route('profile.show') }}"><i class="fas fa-user-circle me-2"></i>Hồ sơ</a></li>
+                                <li><a class="dropdown-item" href="{{ route('my.orders') }}"><i class="fas fa-shopping-bag me-2"></i>Đơn hàng</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li>
                                     <form method="POST" action="{{ route('logout') }}" class="d-inline">
@@ -238,8 +255,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-4">
-                    <h5><i class="fas fa-spa me-2"></i>Beauty Shop</h5>
-                    <p>Chuyên cung cấp mỹ phẩm chính hãng, chất lượng cao với giá cả hợp lý. Cam kết mang đến vẻ đẹp tự nhiên cho mọi phụ nữ.</p>
+                    <h5><i class="fas fa-spa me-2"></i>Fashion Shop</h5>
+                    <p>Chuyên cung cấp thời trang chính hãng, chất lượng cao với giá cả hợp lý. Cam kết mang đến vẻ đẹp tự nhiên cho mọi phụ nữ.</p>
                 </div>
                 <div class="col-md-4 mb-4">
                     <h5>Liên kết nhanh</h5>
@@ -265,7 +282,7 @@
             </div>
             <hr class="my-4">
             <div class="text-center">
-                <p>&copy; 2025 Beauty Shop. Tất cả quyền được bảo lưu.</p>
+                <p>&copy; 2025 Fashion Shop. Tất cả quyền được bảo lưu.</p>
             </div>
         </div>
     </footer>
@@ -274,5 +291,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     @yield('scripts')
+    @stack('scripts')
 </body>
-</html> 
+</html>

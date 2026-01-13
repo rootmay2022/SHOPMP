@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Giỏ hàng - Beauty Shop')
+@section('title', 'Giỏ hàng - Fashion Shop')
 
 @section('content')
     <!-- Page Header -->
@@ -22,60 +22,56 @@
                 <!-- Cart Items -->
                 <div class="col-lg-8 mb-4">
                     <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-white">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Sản phẩm trong giỏ hàng</h5>
+                            @if(count($cartItems) > 0)
+                                <form action="{{ route('cart.clear') }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc muốn xóa toàn bộ giỏ hàng?')">
+                                        <i class="fas fa-trash me-1"></i>Xóa tất cả
+                                    </button>
+                                </form>
+                            @endif
                         </div>
                         <div class="card-body">
-                            @php
-                            $cartItems = [
-                                [
-                                    'id' => 1,
-                                    'name' => 'Son môi MAC Ruby Woo',
-                                    'price' => 850000,
-                                    'image' => 'https://via.placeholder.com/100x100?text=MAC+Ruby+Woo',
-                                    'quantity' => 2
-                                ],
-                                [
-                                    'id' => 2,
-                                    'name' => 'Kem dưỡng ẩm Innisfree',
-                                    'price' => 320000,
-                                    'image' => 'https://via.placeholder.com/100x100?text=Innisfree+Moisturizer',
-                                    'quantity' => 1
-                                ],
-                                [
-                                    'id' => 3,
-                                    'name' => 'Sữa rửa mặt L\'Oreal',
-                                    'price' => 180000,
-                                    'image' => 'https://via.placeholder.com/100x100?text=LOreal+Cleanser',
-                                    'quantity' => 3
-                                ]
-                            ];
-                            @endphp
-
                             @if(count($cartItems) > 0)
                                 @foreach($cartItems as $item)
                                 <div class="row align-items-center py-3 border-bottom">
                                     <div class="col-md-2">
-                                        <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="img-fluid rounded">
+                                        <img src="{{ $item->product->image ?? 'https://via.placeholder.com/100x100?text=Product' }}" alt="{{ $item->product->name }}" class="img-fluid rounded">
                                     </div>
                                     <div class="col-md-4">
-                                        <h6 class="mb-1">{{ $item['name'] }}</h6>
-                                        <small class="text-muted">Mã SP: {{ $item['id'] }}</small>
+                                        <h6 class="mb-1">{{ $item->product->name }}</h6>
+                                        <small class="text-muted">Mã SP: {{ $item->product->id }}</small>
+                                        @if($item->product->hasDiscount())
+                                            <br><small class="text-danger">Giảm {{ $item->product->getDiscountPercentage() }}%</small>
+                                        @endif
                                     </div>
                                     <div class="col-md-2">
-                                        <div class="input-group input-group-sm">
-                                            <button class="btn btn-outline-secondary" type="button">-</button>
-                                            <input type="text" class="form-control text-center" value="{{ $item['quantity'] }}">
-                                            <button class="btn btn-outline-secondary" type="button">+</button>
-                                        </div>
+                                        <form action="{{ route('cart.update') }}" method="POST" class="d-inline">
+                                            @csrf
+                                            <input type="hidden" name="cart_id" value="{{ $item->id }}">
+                                            <div class="input-group input-group-sm">
+                                                <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity({{ $item->id }}, -1)">-</button>
+                                                <input type="number" class="form-control text-center" name="quantity" value="{{ $item->quantity }}" min="1" onchange="this.form.submit()">
+                                                <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity({{ $item->id }}, 1)">+</button>
+                                            </div>
+                                        </form>
                                     </div>
                                     <div class="col-md-2">
-                                        <span class="price">{{ number_format($item['price']) }}đ</span>
+                                        <span class="price">{{ number_format($item->product->price) }}đ</span>
+                                        @if($item->product->hasDiscount())
+                                            <br><small class="text-decoration-line-through text-muted">{{ number_format($item->product->old_price) }}đ</small>
+                                        @endif
                                     </div>
                                     <div class="col-md-2 text-end">
-                                        <button class="btn btn-sm btn-outline-danger">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
+                                        <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                                 @endforeach
@@ -100,16 +96,6 @@
                             <h5 class="mb-0">Tóm tắt đơn hàng</h5>
                         </div>
                         <div class="card-body">
-                            @php
-                            $subtotal = 0;
-                            foreach($cartItems as $item) {
-                                $subtotal += $item['price'] * $item['quantity'];
-                            }
-                            $shipping = 30000;
-                            $tax = $subtotal * 0.1;
-                            $total = $subtotal + $shipping + $tax;
-                            @endphp
-
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Tạm tính:</span>
                                 <span>{{ number_format($subtotal) }}đ</span>
@@ -128,9 +114,15 @@
                                 <strong class="price">{{ number_format($total) }}đ</strong>
                             </div>
 
-                            <button class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#checkoutModal">
-                                <i class="fas fa-credit-card me-2"></i>Thanh toán ngay
-                            </button>
+                            @if(count($cartItems) > 0)
+                                <button class="btn btn-primary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#checkoutModal">
+                                    <i class="fas fa-credit-card me-2"></i>Thanh toán ngay
+                                </button>
+                            @else
+                                <button class="btn btn-primary w-100 mb-3" disabled>
+                                    <i class="fas fa-credit-card me-2"></i>Thanh toán ngay
+                                </button>
+                            @endif
 
                             <div class="text-center">
                                 <small class="text-muted">
@@ -165,32 +157,33 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form action="{{ route('checkout.process') }}" method="POST" id="checkoutForm">
+                        @csrf
                         <div class="row">
                             <div class="col-md-6">
                                 <h6>Thông tin giao hàng</h6>
                                 <div class="mb-3">
                                     <label class="form-label">Họ và tên</label>
-                                    <input type="text" class="form-control" required>
+                                    <input type="text" class="form-control" name="customer_name" value="{{ auth()->user()->name ?? '' }}" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Email</label>
-                                    <input type="email" class="form-control" required>
+                                    <input type="email" class="form-control" name="customer_email" value="{{ auth()->user()->email ?? '' }}" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Số điện thoại</label>
-                                    <input type="tel" class="form-control" required>
+                                    <input type="tel" class="form-control" name="customer_phone" value="{{ auth()->user()->phone ?? '' }}" required>
                                 </div>
                                 <div class="mb-3">
                                     <label class="form-label">Địa chỉ</label>
-                                    <textarea class="form-control" rows="3" required></textarea>
+                                    <textarea class="form-control" name="customer_address" rows="3" required></textarea>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <h6>Phương thức thanh toán</h6>
                                 <div class="mb-3">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment" id="cod" checked>
+                                        <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod" checked>
                                         <label class="form-check-label" for="cod">
                                             <i class="fas fa-money-bill-wave me-2"></i>Thanh toán khi nhận hàng
                                         </label>
@@ -198,7 +191,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment" id="bank">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="bank" value="bank">
                                         <label class="form-check-label" for="bank">
                                             <i class="fas fa-university me-2"></i>Chuyển khoản ngân hàng
                                         </label>
@@ -206,7 +199,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment" id="momo">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="momo" value="momo">
                                         <label class="form-check-label" for="momo">
                                             <i class="fas fa-mobile-alt me-2"></i>Ví MoMo
                                         </label>
@@ -214,7 +207,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment" id="vnpay">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="vnpay" value="vnpay">
                                         <label class="form-check-label" for="vnpay">
                                             <i class="fas fa-credit-card me-2"></i>VNPay
                                         </label>
@@ -225,14 +218,14 @@
                         <div class="row mt-3">
                             <div class="col-12">
                                 <h6>Ghi chú</h6>
-                                <textarea class="form-control" rows="3" placeholder="Ghi chú cho đơn hàng (không bắt buộc)"></textarea>
+                                <textarea class="form-control" name="notes" rows="3" placeholder="Ghi chú cho đơn hàng (không bắt buộc)"></textarea>
                             </div>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-primary">
+                    <button type="submit" form="checkoutForm" class="btn btn-primary">
                         <i class="fas fa-check me-2"></i>Xác nhận đặt hàng
                     </button>
                 </div>
@@ -243,29 +236,12 @@
 
 @section('scripts')
 <script>
-    // Quantity controls
-    document.querySelectorAll('.btn-outline-secondary').forEach(button => {
-        button.addEventListener('click', function() {
-            const input = this.parentElement.querySelector('input');
-            let value = parseInt(input.value);
-            
-            if (this.textContent === '+') {
-                value++;
-            } else if (this.textContent === '-' && value > 1) {
-                value--;
-            }
-            
-            input.value = value;
-        });
-    });
-
-    // Remove item
-    document.querySelectorAll('.btn-outline-danger').forEach(button => {
-        button.addEventListener('click', function() {
-            if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
-                this.closest('.row').remove();
-            }
-        });
-    });
+    function updateQuantity(cartId, change) {
+        const input = document.querySelector(`input[name="cart_id"][value="${cartId}"]`).closest('form').querySelector('input[name="quantity"]');
+        let newValue = parseInt(input.value) + change;
+        if (newValue < 1) newValue = 1;
+        input.value = newValue;
+        input.closest('form').submit();
+    }
 </script>
 @endsection 

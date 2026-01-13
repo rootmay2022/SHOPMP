@@ -15,7 +15,7 @@ class BannerSeeder extends Seeder
     {
         $banners = [
             [
-                'title' => 'Bộ sưu tập mỹ phẩm mới',
+                'title' => 'Bộ sưu tập thời trang mới',
                 'description' => 'Khám phá những sản phẩm làm đẹp mới nhất với ưu đãi lên đến 50%',
                 'image' => 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1200&h=400&fit=crop',
                 'link' => '/products',

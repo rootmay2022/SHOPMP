@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $product->name . ' - Beauty Shop')
+@section('title', $product->name . ' - Fashion Shop')
 
 @section('content')
 <!-- Breadcrumb -->
@@ -23,16 +23,12 @@
             <div class="col-lg-6 mb-4">
                 <div class="product-gallery">
                     <div class="main-image mb-3">
-                        <img src="{{ asset('images/product/'.$product->image) }}" alt="{{ $product->name }}" 
-                             class="img-fluid rounded-3 shadow-sm" id="mainImage">
+<img src="{{ asset($product->image) }}" alt="{{ $product->name }}">
+
+                            
                     </div>
                     <div class="thumbnail-images d-flex gap-2">
-                        <img src="{{ $product->image }}" alt="{{ $product->name }}" 
-                             class="img-thumbnail thumbnail-img active" onclick="changeImage(this)">
-                        <img src="{{ $product->image }}" alt="{{ $product->name }}" 
-                             class="img-thumbnail thumbnail-img" onclick="changeImage(this)">
-                        <img src="{{ $product->image }}" alt="{{ $product->name }}" 
-                             class="img-thumbnail thumbnail-img" onclick="changeImage(this)">
+                       
                     </div>
                 </div>
             </div>
@@ -74,28 +70,24 @@
                         @endif
                     </div>
 
-                    <!-- Quantity & Add to Cart -->
-                    <div class="add-to-cart-section mb-4">
-                        <div class="row align-items-center">
-                            <div class="col-md-4 mb-3 mb-md-0">
-                                <label for="quantity" class="form-label">Số lượng:</label>
-                                <div class="input-group">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <input type="number" class="form-control text-center" id="quantity" value="1" min="1" max="{{ $product->stock }}">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity()">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
+                    <!-- Add to Cart Section -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">Thêm vào giỏ hàng</h5>
+                            <form action="{{ route('cart.add', $product->id) }}" method="POST">
+                                @csrf
+                                <div class="row align-items-end">
+                                    <div class="col-md-4">
+                                        <label for="quantity" class="form-label">Số lượng</label>
+                                        <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1" required>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                                            <i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ hàng
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-8">
-                                <button class="btn btn-primary btn-lg w-100" onclick="addToCart()" 
-                                        {{ $product->stock <= 0 ? 'disabled' : '' }}>
-                                    <i class="fas fa-shopping-cart me-2"></i>
-                                    {{ $product->stock > 0 ? 'Thêm vào giỏ hàng' : 'Hết hàng' }}
-                                </button>
-                            </div>
+                            </form>
                         </div>
                     </div>
 

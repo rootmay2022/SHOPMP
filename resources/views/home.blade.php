@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Trang chủ - Beauty Shop')
+@section('title', 'Trang chủ - Fashion Shop')
 
 @section('content')
     <!-- Banner Slider Section -->
@@ -55,7 +55,7 @@
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="fw-bold">Danh mục sản phẩm</h2>
-                <p class="text-muted">Khám phá các danh mục mỹ phẩm đa dạng</p>
+                <p class="text-muted">Khám phá các danh mục thời trangđa dạng</p>
             </div>
             <div class="row g-4">
                 @foreach($categories as $category)
@@ -75,67 +75,87 @@
     </section>
 
     <!-- Featured Products -->
-    <section class="py-5">
-        <div class="container">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold">Sản phẩm nổi bật</h2>
-                <p class="text-muted">Những sản phẩm được yêu thích nhất</p>
-            </div>
-            <div class="row g-4">
-                @foreach($featuredProducts as $product)
-                <div class="col-md-6 col-lg-3">
-                    <div class="card product-card h-100">
-                        <img src="{{ asset('images/product/'.$product->image) }}" class="card-img-top product-image" alt="{{ $product->name }}">
-                        <div class="card-body d-flex flex-column">
-                            <span class="category-badge mb-2">{{ $product->category }}</span>
-                            <h5 class="card-title">
-                                <a href="{{ route('products.show', $product->id) }}" class="text-decoration-none text-dark">
-                                    {{ $product->name }}
-                                </a>
-                            </h5>
-                            <div class="mb-3">
-                                <span class="price">{{ $product->getFormattedPrice() }}</span>
-                                @if($product->hasDiscount())
+   <!-- Featured Products -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">Sản phẩm nổi bật</h2>
+            <p class="text-muted">Những sản phẩm được yêu thích nhất</p>
+        </div>
+        <div class="row g-4">
+            @foreach($featuredProducts as $product)
+            <div class="col-md-6 col-lg-3">
+                <div class="card product-card h-100">
+
+                    <!-- Hiển thị hình đã sửa -->
+<img src="{{ asset($product->image) }}" alt="{{ $product->name }}">
+
+                         
+
+                    <div class="card-body d-flex flex-column">
+                        <span class="category-badge mb-2">
+                            {{ $product->category->name ?? 'Danh mục' }}
+                        </span>
+
+                        <h5 class="card-title">
+                            <a href="{{ route('products.show', $product->id) }}"
+                               class="text-decoration-none text-dark">
+                                {{ $product->name }}
+                            </a>
+                        </h5>
+
+                        <div class="mb-3">
+                            <span class="price">{{ $product->getFormattedPrice() }}</span>
+                            @if($product->hasDiscount())
                                 <span class="old-price ms-2">{{ $product->getFormattedOldPrice() }}</span>
-                                @endif
-                            </div>
-                            <div class="mt-auto">
-                                <div class="row g-2">
-                                    <div class="col-8">
-                                        <button class="btn btn-primary w-100">
+                            @endif
+                        </div>
+
+                        <div class="mt-auto">
+                            <div class="row g-2">
+                                <div class="col-8">
+                                    <form action="{{ route('cart.add', $product->id) }}" method="POST" class="d-inline">
+                                        @csrf
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="btn btn-primary w-100">
                                             <i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ
                                         </button>
-                                    </div>
-                                    <div class="col-4">
-                                        <a href="{{ route('products.show', $product->id) }}" class="btn btn-outline-secondary w-100">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
-                                    </div>
+                                    </form>
+                                </div>
+                                <div class="col-4">
+                                    <a href="{{ route('products.show', $product->id) }}"
+                                       class="btn btn-outline-secondary w-100">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
-                @endforeach
             </div>
-            <div class="text-center mt-5">
-                <a href="{{ route('products') }}" class="btn btn-outline-primary btn-lg">
-                    Xem tất cả sản phẩm
-                </a>
-            </div>
+            @endforeach
         </div>
-    </section>
+
+        <div class="text-center mt-5">
+            <a href="{{ route('products') }}" class="btn btn-outline-primary btn-lg">
+                Xem tất cả sản phẩm
+            </a>
+        </div>
+    </div>
+</section>
+
 
     <!-- About Section -->
     <section id="about" class="py-5 bg-light">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <img src="https://via.placeholder.com/600x400?text=About+Us" alt="About Us" class="img-fluid rounded-3 shadow">
+                    <img src="https://png.pngtree.com/background/20230414/original/pngtree-cosmetic-set-static-scene-photography-advertising-background-picture-image_2424115.jpg" alt="About Us" class="img-fluid rounded-3 shadow">
                 </div>
                 <div class="col-lg-6">
-                    <h2 class="fw-bold mb-4">Về Beauty Shop</h2>
-                    <p class="lead mb-4">Chúng tôi tự hào là địa chỉ tin cậy cung cấp các sản phẩm mỹ phẩm chất lượng cao, chính hãng với giá cả hợp lý.</p>
+                    <h2 class="fw-bold mb-4">Về Fashion Shop</h2>
+                    <p class="lead mb-4">Chúng tôi tự hào là địa chỉ tin cậy cung cấp các sản phẩm thời trangchất lượng cao, chính hãng với giá cả hợp lý.</p>
                     <div class="row g-4">
                         <div class="col-6">
                             <div class="text-center">
@@ -227,23 +247,6 @@
         });
     });
 
-    // Add to cart functionality
-    document.querySelectorAll('.btn-primary').forEach(button => {
-        if (button.textContent.includes('Thêm vào giỏ')) {
-            button.addEventListener('click', function() {
-                // Add animation
-                this.innerHTML = '<i class="fas fa-check me-2"></i>Đã thêm';
-                this.classList.remove('btn-primary');
-                this.classList.add('btn-success');
-                
-                // Reset after 2 seconds
-                setTimeout(() => {
-                    this.innerHTML = '<i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ';
-                    this.classList.remove('btn-success');
-                    this.classList.add('btn-primary');
-                }, 2000);
-            });
-        }
-    });
+    // Add to cart functionality - removed as we now use real forms
 </script>
-@endsection 
+@endsection
