@@ -11,20 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('carts', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedBigInteger('product_id');
-            $table->integer('quantity');
-            $table->string('session_id');
-            $table->timestamps();
+      Schema::create('carts', function (Blueprint $table) {
+    $table->id();
+    $table->unsignedBigInteger('user_id')->nullable();
+    $table->unsignedBigInteger('product_id');
+    $table->integer('quantity');
+    $table->string('session_id');
+    $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('product_id')->references('id')->on('beauty_products')->onDelete('cascade');
-            
-            $table->index(['user_id', 'product_id']);
-            $table->index(['session_id', 'product_id']);
-        });
+    $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
+    $table->index(['user_id', 'product_id']);
+    $table->index(['session_id', 'product_id']);
+});
+
     }
 
     /**
