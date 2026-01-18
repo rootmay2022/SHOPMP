@@ -20,9 +20,11 @@ return new class extends Migration
             $table->decimal('price', 10, 2);
             $table->decimal('total', 10, 2);
             $table->timestamps();
-            
+
+            // Sửa tên bảng tham chiếu từ 'products' thành 'beauty_products'
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
-            $table->foreign('product_id')->references('id')->on('fashion_products')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('beauty_products')->onDelete('cascade');
+
             $table->index(['order_id', 'product_id']);
         });
     }

@@ -9,7 +9,8 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $table = 'categories';
+    // SỬA DÒNG NÀY: Từ 'categories' thành 'beauty_categories'
+    protected $table = 'beauty_categories';
 
     protected $fillable = [
         'name',
@@ -26,6 +27,7 @@ class Category extends Model
     // Relationship với products
     public function products()
     {
+        // Liên kết từ beauty_categories.name sang beauty_products.category
         return $this->hasMany(Product::class, 'category', 'name');
     }
 
@@ -34,4 +36,4 @@ class Category extends Model
     {
         return $query->where('is_active', true);
     }
-} 
+}

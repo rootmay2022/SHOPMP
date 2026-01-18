@@ -9,6 +9,7 @@ class Product extends Model
 {
     use HasFactory;
 
+    // Chỉ định chính xác tên bảng trong database
     protected $table = 'beauty_products';
 
     protected $fillable = [
@@ -31,31 +32,44 @@ class Product extends Model
         'is_active' => 'boolean'
     ];
 
-    // Scope để lấy sản phẩm nổi bật
+    // --- SCOPES: Giúp truy vấn nhanh ---
+
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true)->where('is_active', true);
     }
 
-    // Scope để lấy sản phẩm theo danh mục
-    public function scopeByCategory($query, $category)
+    public function scopeActive($query)
     {
-        return $query->where('category', $category)->where('is_active', true);
+        return $query->where('is_active', true);
     }
 
-    // Scope để lấy sản phẩm theo thương hiệu
-    public function scopeByBrand($query, $brand)
+    // --- RELATIONSHIPS: Liên kết bảng ---
+
+    /**
+     * Liên kết với bảng categories qua cột 'category' (name)
+     */
+    public function categoryRel()
     {
-        return $query->where('brand', $brand)->where('is_active', true);
+        // Sử dụng 'categoryRel' để tránh trùng tên với cột 'category' trong DB
+        return $this->belongsTo(Category::class, 'category', 'name');
     }
 
-    // Kiểm tra có giảm giá không
+    /**
+     * Liên kết với bảng brands qua cột 'brand' (name)
+     */
+    public function brandRel()
+    {
+        return $this->belongsTo(Brand::class, 'brand', 'name');
+    }
+
+    // --- HELPER METHODS: Hàm hỗ trợ hiển thị ---
+
     public function hasDiscount()
     {
         return $this->old_price && $this->old_price > $this->price;
     }
 
-    // Tính phần trăm giảm giá
     public function getDiscountPercentage()
     {
         if (!$this->hasDiscount()) {
@@ -64,24 +78,13 @@ class Product extends Model
         return round((($this->old_price - $this->price) / $this->old_price) * 100);
     }
 
-    // Format giá
     public function getFormattedPrice()
     {
-        return number_format($this->price) . 'đ';
+        return number_format($this->price, 0, ',', '.') . 'đ';
     }
 
     public function getFormattedOldPrice()
     {
-        return number_format($this->old_price) . 'đ';
+        return $this->old_price ? number_format($this->old_price, 0, ',', '.') . 'đ' : '';
     }
-
-    // Relationship to category by name column
-    public function category()
-    {
-        // Maps product's 'category' (name string) to categories.name
-        return $this->belongsTo(Category::class, 'category', 'name');
-    }
-
-    // Relationship to brand by name column
-   
-} 
+}
